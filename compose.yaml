@@ -1,37 +1,25 @@
 services:
-  db:
-    image: mysql:8.4
-    environment:
-      MYSQL_DATABASE: ${DB_NAME:-ecored}
-      MYSQL_USER: ${DB_USER:-ecored}
-      MYSQL_PASSWORD: ${DB_PASSWORD:?Configura DB_PASSWORD en .env}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Configura MYSQL_ROOT_PASSWORD en .env}
-    ports:
-      - "5434:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost --silent"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-    restart: unless-stopped
   api:
     build: .
+    # Reconstruye la imagen en cada `docker compose up -d`; la caché de capas evita reinstalar dependencias.
+    pull_policy: build
+    # Conexión a una MySQL existente, configurada en .env.
     environment:
-      DB_HOST: db
-      DB_PORT: 3306
+      DB_HOST: ${DB_HOST:?Configura DB_HOST en .env}
+      DB_PORT: ${DB_PORT:-3306}
       DB_NAME: ${DB_NAME:-ecored}
       DB_USER: ${DB_USER:-ecored}
       DB_PASSWORD: ${DB_PASSWORD:?Configura DB_PASSWORD en .env}
       INGEST_API_KEY: ${INGEST_API_KEY:?Configura INGEST_API_KEY en .env}
+    # Permite DB_HOST=host.docker.internal cuando MySQL corre en el mismo equipo (también en Linux).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
-volumes:
-  mysql_data:
-     external: true
-     name: ecored-main_mysql_data
