@@ -26,17 +26,28 @@ Incluye el [receptor Heltec V3 adaptado](firmware/README.md) para el paquete del
 
 ## Inicio con Docker
 
+Compose levanta solo la API; se conecta a una base MySQL 8.0/8.4 que ya tengas.
+
 1. Instala Docker con Compose.
-2. Copia `.env.example` a `.env` y sustituye **todas** las contraseñas y `INGEST_API_KEY`. Genera la clave con `python -c "import secrets; print(secrets.token_urlsafe(32))"`.
+2. Copia `.env.example` a `.env` y completa los datos de conexión de tu MySQL (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`) y `INGEST_API_KEY`. Genera la clave con `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Si MySQL corre en el mismo equipo, usa `DB_HOST=host.docker.internal`: dentro del contenedor, `127.0.0.1` es el propio contenedor.
 3. Ejecuta:
 
 ```console
-docker compose up --build -d
+docker compose up -d
 ```
 
-Abre [el panel](http://localhost:8000), [la documentación interactiva](http://localhost:8000/docs) o [el estado de la base](http://localhost:8000/health/db).
+Abre [el panel](http://localhost:8000), [la documentación interactiva](http://localhost:8000/docs) o [el estado de la base](http://localhost:8000/health/db). `docker compose ps` muestra la API como `healthy` cuando está lista.
 
-Compose crea la base y las tablas, registra `EST-001` y conserva los datos en un volumen. MySQL no publica su puerto hacia el exterior. El archivo `.env` queda excluido de Git. Al cambiar contraseñas de una base ya inicializada, actualiza también los usuarios de MySQL: cambiar `.env` no modifica sus contraseñas existentes.
+Para actualizar tras cambiar el código:
+
+```console
+git pull
+docker compose up -d
+```
+
+Compose reconstruye la imagen de la API en cada `up` (la caché evita reinstalar dependencias si `requirements.txt` no cambió) y solo recrea el contenedor si hubo cambios.
+
+Al arrancar, la API ejecuta `scripts.init_db`: crea las tablas que falten y registra `EST-001`, sin borrar datos existentes. El usuario MySQL necesita los permisos indicados en [Inicio sin Docker](#inicio-sin-docker-python-311-o-superior) y debe poder conectarse desde el contenedor: un usuario `'ecored'@'localhost'` no sirve, usa por ejemplo `'ecored'@'%'` o la red de Docker. MySQL además debe escuchar en una interfaz alcanzable (`bind-address`). Si la conexión falla, `docker compose logs api` muestra el error. El archivo `.env` queda excluido de Git.
 
 ## Inicio sin Docker (Python 3.11 o superior)
 
