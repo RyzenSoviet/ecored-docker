@@ -12,5 +12,5 @@ services:
             DB_PASSWORD: ${DB_PASSWORD:?Configura DB_PASSWORD en .env}
             INGEST_API_KEY: ${INGEST_API_KEY:?Configura INGEST_API_KEY en .env}
         ports:
-            - "8000:8000"
+            - "8014:8000"
         restart: unless-stopped
