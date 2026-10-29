@@ -21,10 +21,14 @@
     />
     <link rel="stylesheet" href="/static/styles.css" />
     <script>
-      // Aplicar la letra grande antes de dibujar la página, sin parpadeo.
+      // Aplicar la letra grande y el modo claro u oscuro elegidos antes de
+      // dibujar la página, sin parpadeo. Sin elección, se sigue al dispositivo.
       try {
         if (localStorage.getItem("ecored-letra") === "grande")
           document.documentElement.classList.add("large-text");
+        const tema = localStorage.getItem("ecored-tema");
+        if (tema === "claro") document.documentElement.dataset.theme = "light";
+        if (tema === "oscuro") document.documentElement.dataset.theme = "dark";
       } catch (e) {}
     </script>
     <script src="/static/app.js" defer></script>
@@ -56,6 +60,9 @@
         <path
           d="M12 1.5v2m0 17v2m10.5-10.5h-2m-17 0h-2m17.4-7.4-1.4 1.4M6 18l-1.4 1.4m14.8 0L18 18M6 6 4.6 4.6"
         />
+      </symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24">
+        <path d="M20.5 14.1A8.5 8.5 0 1 1 9.9 3.5a6.6 6.6 0 0 0 10.6 10.6Z" />
       </symbol>
       <symbol id="i-good" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="10" />
@@ -109,10 +116,16 @@
           >Eco-Red</span
         ></a
       >
-      <button id="text-size" class="text-size" aria-pressed="false">
-        <svg class="icon" aria-hidden="true"><use href="#i-text" /></svg
-        ><span id="text-size-label">Agrandar letra</span>
-      </button>
+      <div class="topbar-actions">
+        <button id="theme" class="top-button" type="button">
+          <svg class="icon" aria-hidden="true"><use id="theme-icon" href="#i-moon" /></svg
+          ><span id="theme-label">Modo oscuro</span>
+        </button>
+        <button id="text-size" class="top-button" aria-pressed="false">
+          <svg class="icon" aria-hidden="true"><use href="#i-text" /></svg
+          ><span id="text-size-label">Agrandar letra</span>
+        </button>
+      </div>
     </header>
 
     <main>
