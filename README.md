@@ -17,6 +17,7 @@ Incluye el [receptor Heltec V3 adaptado](firmware/README.md) para el paquete del
 - Recepción de mediciones con `X-API-Key`, validación de sensores y fechas UTC.
 - Estaciones, última lectura, historial paginado, resumen y exportación CSV.
 - Panel adaptable a móvil: temperatura, humedad, MQ2, MQ135, MQ9, UV, RSSI y SNR, gráficos y actualización cada 30 segundos.
+- Modo claro y modo oscuro: el panel usa el que tenga el dispositivo (teléfono o computador) y cambia solo si el dispositivo cambia. El botón «Modo oscuro / Modo claro» de la barra superior permite elegir otro; la elección se recuerda en ese navegador, y si se vuelve a elegir el mismo modo del dispositivo, el panel vuelve a seguirlo.
 - Panel pensado para personas mayores: letra grande (con botón para agrandarla), mensaje principal «Todo está bien / Ponga atención / ¡Cuidado!», estados con color, icono y palabra, y un consejo práctico para cada dato. Los detalles técnicos quedan en una sección desplegable.
 - Los límites de gas y humo, calidad del aire, monóxido de carbono y radiación UV (lectura del ADC, 0 a 4095) están al inicio de `app/static/app.js`, en `LIMITS`. Son orientativos: ajústelos según la calibración de sus sensores. El panel no reemplaza a un detector de monóxido certificado.
 - Receptor V3 con panel local, cola de envío, reintentos y prevención de duplicados por `sample_id`.
